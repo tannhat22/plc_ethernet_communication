@@ -336,7 +336,7 @@ class HostLink:
         self._check_cmdanswer(recv_data, True)
         return None
 
-    def read_data(self, headdevice, data_format: str = "U"):
+    def read_data(self, headdevice, data_format: str = ""):
         """This command is used to read data from one specified device.
         Args:
             headdevice: Read head device. (ex: "MR10000")
@@ -349,9 +349,7 @@ class HostLink:
         subheader = "RD"
 
         request_data = self._make_devicedata(headdevice)
-        request_data += const.DataFormat.get_str_dataformatcode(
-            self.plctype, data_format
-        )
+        request_data += data_format
         send_data = self._make_senddata(subheader, request_data)
         # send mc data
         self._send(send_data)
@@ -363,7 +361,7 @@ class HostLink:
         device_value = int(device_value[:-2])
         return device_value
 
-    def continuous_read_data(self, headdevice, readsize: int, data_format: str = "U"):
+    def continuous_read_data(self, headdevice, readsize: int, data_format: str = ""):
         """This command is used to read data of specified number of devices continuously.
         Args:
             headdevice: Read head device. (ex: "MR10000")
@@ -377,9 +375,7 @@ class HostLink:
         subheader = "RDS"
 
         request_data = self._make_devicedata(headdevice)
-        request_data += const.DataFormat.get_str_dataformatcode(
-            self.plctype, data_format
-        )
+        request_data += data_format
         request_data += " " + str(readsize)
         send_data = self._make_senddata(subheader, request_data)
         # send mc data
@@ -394,7 +390,7 @@ class HostLink:
             device_values.append(int(recv_data[i]))
         return device_values
 
-    def write_data(self, headdevice, data_format: str = "U", value: int = 0):
+    def write_data(self, headdevice, data_format: str = "", value: int = 0):
         """This command is used to write data into one specified device.
         Args:
             headdevice: Write head device. (ex: "MR10000")
@@ -404,9 +400,7 @@ class HostLink:
         subheader = "WR"
 
         request_data = self._make_devicedata(headdevice)
-        request_data += const.DataFormat.get_str_dataformatcode(
-            self.plctype, data_format
-        )
+        request_data += data_format
         request_data += " " + str(value)
         send_data = self._make_senddata(subheader, request_data)
         # send mc data
@@ -417,7 +411,7 @@ class HostLink:
         return None
 
     def continuous_write_data(
-        self, headdevice, writesize: int, data_format: str = "U", values: list = [0]
+        self, headdevice, writesize: int, data_format: str = "", values: list = [0]
     ):
         """This command is used to write data of specified number of devices continuously.
         Args:
@@ -429,9 +423,7 @@ class HostLink:
         subheader = "WRS"
 
         request_data = self._make_devicedata(headdevice)
-        request_data += const.DataFormat.get_str_dataformatcode(
-            self.plctype, data_format
-        )
+        request_data += data_format
         request_data += " " + str(writesize)
         for i in range(writesize):
             request_data += " " + str(values[i])
@@ -444,7 +436,7 @@ class HostLink:
         return None
 
     def monitor_register(
-        self, headdevices: list, bit: bool = True, data_format: str = "U"
+        self, headdevices: list, bit: bool = True, data_format: str = ""
     ):
         """This command is used to register the specified device into bit device register table (MBS) or word device register table (MWS).
         Args:
@@ -458,18 +450,10 @@ class HostLink:
 
         request_data = ""
         for i in range(len(headdevices)):
-            if i == (len(headdevices) - 1):
-                request_data += self._make_devicedata(headdevices[i])
-                if not bit:
-                    request_data += const.DataFormat.get_str_dataformatcode(
-                        self.plctype, data_format
-                    )
-            else:
-                request_data += self._make_devicedata(headdevices[i])
-                if not bit:
-                    request_data += const.DataFormat.get_str_dataformatcode(
-                        self.plctype, data_format
-                    )
+            request_data += self._make_devicedata(headdevices[i])
+            if not bit:
+                request_data += data_format
+            if i < (len(headdevices) - 1):
                 request_data += " "
 
         send_data = self._make_senddata(subheader, request_data)
@@ -552,7 +536,7 @@ class HostLink:
         return None
 
     def read_expansion_unit_buffer_memory(
-        self, unit_no: int, address: int, readsize, data_format: str = "U"
+        self, unit_no: int, address: int, readsize, data_format: str = ""
     ):
         """This command is used to read continuously specified number of data from the expansion unit buffer memory.
         Args:
@@ -568,9 +552,7 @@ class HostLink:
         subheader = "URD"
 
         request_data = str(unit_no) + " " + str(address)
-        request_data += const.DataFormat.get_str_dataformatcode(
-            self.plctype, data_format
-        )
+        request_data += data_format
         request_data += " " + str(readsize)
         send_data = self._make_senddata(subheader, request_data)
         # send mc data
@@ -590,7 +572,7 @@ class HostLink:
         unit_no: int,
         address: int,
         writesize,
-        data_format: str = "U",
+        data_format: str = "",
         values: list = [0],
     ):
         """This command is used to specified number of data will be written into the expansion unit buffer memory.
@@ -604,9 +586,7 @@ class HostLink:
         subheader = "UWR"
 
         request_data = str(unit_no) + " " + str(address)
-        request_data += const.DataFormat.get_str_dataformatcode(
-            self.plctype, data_format
-        )
+        request_data += data_format
         request_data += " " + str(writesize)
         for i in range(writesize):
             request_data += " " + str(values[i])

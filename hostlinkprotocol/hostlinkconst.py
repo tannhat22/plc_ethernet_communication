@@ -79,26 +79,6 @@ class DeviceCodeError(Exception):
         return error_txt
 
 
-class DataFormatError(Exception):
-    """data_format error. DataFormat is not exsist.
-
-    Attributes:
-        plctype(str):       PLC type. "KV",
-        dataformat(str):    data format
-
-    """
-
-    def __init__(self, plctype, dataformat):
-        self.plctype = plctype
-        self.dataformat = dataformat
-
-    def __str__(self):
-        error_txt = "dataformat: {} is not support {} series PLC".format(
-            self.dataformat, self.plctype
-        )
-        return error_txt
-
-
 class DeviceConstants:
     """This class defines hostlink protocol device constatnt.
 
@@ -201,35 +181,3 @@ class DeviceConstants:
             return DeviceConstants.VM_DEVICE
         else:
             raise DeviceCodeError(plctype, devicename)
-
-
-class DataFormat:
-    UNSIGNED_16_BIT_DEC = ".U"
-    SIGNED_16_BIT_DEC = ".S"
-    UNSIGNED_32_BIT_DEC = ".D"
-    SIGNED_32_BIT_DEC = ".L"
-    HEX_16_BIT = ".H"
-
-    @staticmethod
-    def get_str_dataformatcode(plctype, dataformat):
-        """Static method that returns devicecode from device name.
-
-        Args:
-            plctype(str):       PLC type. "KV5500"
-            dataformat(str):    Data format (ex: "U", "S", "D", "L", "H")
-
-        Returns:
-            dataformat(str):    Data format defined hostlink protocol (ex: "U" → ".U")
-        """
-        if dataformat == "U":
-            return DataFormat.UNSIGNED_16_BIT_DEC
-        elif dataformat == "S":
-            return DataFormat.SIGNED_16_BIT_DEC
-        elif dataformat == "D":
-            return DataFormat.UNSIGNED_32_BIT_DEC
-        elif dataformat == "L":
-            return DataFormat.SIGNED_32_BIT_DEC
-        elif dataformat == "H":
-            return DataFormat.HEX_16_BIT
-        else:
-            raise DataFormatError(plctype, dataformat)
